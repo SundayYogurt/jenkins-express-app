@@ -1,0 +1,23 @@
+# Define Network
+networks:
+  jenkins_network:
+    name: jenkins_network
+    driver: bridge
+
+# Define Services
+services:
+  jenkins:
+    build: .
+    image: jenkins-with-docker:jdk21
+    container_name: jenkins
+    user: root # Run as root to allow entrypoint script to set permissions
+    volumes:
+      - ./jenkins_home:/var/jenkins_home # เพื่อให้ Jenkins สามารถเก็บข้อมูลไว้ใน host
+      - /var/run/docker.sock:/var/run/docker.sock # เพื่อให้ Jenkins สามารถใช้งาน Docker daemon ที่รันบน host ได้
+    environment:
+      - JENKINS_OPTS=--httpPort=8800 # กำหนด Port สำหรับ Jenkins UI
+    ports:
+      - "8800:8800" # สำหรับ Jenkins UI
+    restart: always
+    networks:
+      - jenkins_network
